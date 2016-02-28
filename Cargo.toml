@@ -1,0 +1,6 @@
+[package]
+name = "hll-plus-plus"
+version = "0.1.0"
+authors = ["Fedor Gogolev <knsd@knsd.net>"]
+
+[dependencies]
