@@ -1,6 +1,6 @@
 
 use std::collections::{HashSet};
-
+use std::hash::{Hash, Hasher, SipHasher};
 
 pub struct CompressedList {
     count: u32,
@@ -46,6 +46,24 @@ impl Hll {
             list: CompressedList::new(m as usize)
         })
     }
+
+    fn add<T: Hash>(&mut self, value: &T) {
+        let mut hasher = SipHasher::new();
+        value.hash(&mut hasher);
+        let hash = hasher.finish();
+        match self {
+            &mut Hll::Sparse {..} => (),
+            &mut Hll::Dense {p, ref mut registers, ..} => {
+                let idx = eb64(hash, 64, 64 - p) as usize;
+                let w = hash << p | 1 << (p - 1);
+                let zero_bits = (w.leading_zeros() + 1) as u8;
+                if zero_bits > registers[idx] {
+                    registers[idx] = zero_bits
+                }
+            },
+        }
+    }
+}
 
 
 fn eb64(bits: u64, hi: u8, lo: u8) -> u64 {  // FIXME: something wrong with lo = 0, p = 64
