@@ -68,6 +68,15 @@ impl Hll {
     }
 }
 
+fn encode_hash(hash: u64, p: u8) -> u32 {
+    let idx = eb64(hash, 64, 64 - P_PRIME) as u32;
+    if eb64(hash, 64 - p, 64 - P_PRIME) == 0 {
+        let zero_bits = ((eb64(hash, 64 - P_PRIME, 0) << P_PRIME) | (1 << P_PRIME - 1)) + 1;
+        (idx << 7) | (zero_bits << 1) as u32 | 1
+    } else {
+        idx << 1
+    }
+}
 
 fn eb64(bits: u64, hi: u8, lo: u8) -> u64 {  // FIXME: something wrong with lo = 0, p = 64
     let diff = hi - lo;
