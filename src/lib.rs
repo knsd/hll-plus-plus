@@ -2,6 +2,9 @@
 use std::collections::{HashSet};
 use std::hash::{Hash, Hasher, SipHasher};
 
+const P_PRIME: u8 = 25;
+const M_PRIME: u32 = 1 << (P_PRIME - 1);
+
 pub struct CompressedList {
     count: u32,
     last: u32,
