@@ -48,12 +48,13 @@ impl Hll {
     }
 
 
-fn eb64(bits: u64, hi: u8, lo: u8) -> u64 {  // FIXME: something wrong
+fn eb64(bits: u64, hi: u8, lo: u8) -> u64 {  // FIXME: something wrong with lo = 0, p = 64
     let diff = hi - lo;
     let m = if diff >= 64 {
         0 - 1
     } else {
         ((1u64 << diff) - 1) << lo
+
     };
     (bits & m) >> lo
 }
