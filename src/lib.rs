@@ -55,7 +55,13 @@ impl Hll {
         value.hash(&mut hasher);
         let hash = hasher.finish();
         match self {
-            &mut Hll::Sparse {..} => (),
+            &mut Hll::Sparse {p, m, ref mut set, ..} => {
+                set.insert(encode_hash(hash, p));
+
+                if set.len() * 100 > m as usize {
+                    ()
+                }
+            },
             &mut Hll::Dense {p, ref mut registers, ..} => {
                 let idx = eb64(hash, 64, 64 - p) as usize;
                 let w = hash << p | 1 << (p - 1);
